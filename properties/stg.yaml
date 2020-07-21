@@ -1,0 +1,8 @@
+mongo:
+  uri: mongodb://localhost:27017/person?readPreference=primary&connectTimeoutMS=5000&socketTimeoutMS=5000
+  database: person
+  collection: person
+port: 3000
+log:
+  level: info
+  jsonformatter: true

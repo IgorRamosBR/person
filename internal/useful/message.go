@@ -1,0 +1,18 @@
+package useful
+
+const FindAll string = "Getting all people."
+const FindById string = "Getting person with id"
+const Create string = "Creating person with body"
+const Update string = "Updating person with id"
+const Delete string = "Deleting person with id"
+const ConnectDbError string = "Error trying to connect to database."
+const GetDataFromDbError string = "Error trying to get data from the database."
+const ParserError string = "Error trying to parser data."
+const ValidateBodyError string = "Error validating body."
+const CreateError string = "Error creating new person."
+const UpdateError string = "Error updating a person."
+const DeleteError string = "Error deleting a person."
+const InternalErrorOccurred string = "An internal error occurred, please try later."
+const PersonNotFound string = "Person not found."
+const BrokenBody string = "Body sent is wrong. Please send a body like an example in documentation."
+const BrokenId string = "Id sent is wrong. Please send a valid id."
