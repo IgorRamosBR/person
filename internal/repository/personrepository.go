@@ -23,9 +23,10 @@ func (p PersonRepository) Find() ([]document.Person, error) {
 	if err == nil {
 		for cur.Next(ctx) {
 			var result document.Person
-			err := cur.Decode(&result)
+			err = cur.Decode(&result)
 			if err != nil {
 				log.Error(err)
+				break
 			}
 			people = append(people, result)
 		}

@@ -14,10 +14,14 @@ import (
 )
 
 type PersonHandler struct {
-	Repository repository.PersonRepository
+	Repository repository.Repository
 }
 
-func (p PersonHandler) Find(w http.ResponseWriter, r *http.Request) {
+func NewPersonHandler(repo repository.Repository) *PersonHandler {
+	return &PersonHandler{Repository: repo}
+}
+
+func (p *PersonHandler) Find(w http.ResponseWriter, r *http.Request) {
 
 	log.Infoln(useful.FindAll)
 
@@ -45,7 +49,7 @@ func (p PersonHandler) Find(w http.ResponseWriter, r *http.Request) {
 	useful.BuildSuccess(w, http.StatusOK, peopleDTO)
 }
 
-func (p PersonHandler) FindById(w http.ResponseWriter, r *http.Request) {
+func (p *PersonHandler) FindById(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 
@@ -70,7 +74,7 @@ func (p PersonHandler) FindById(w http.ResponseWriter, r *http.Request) {
 	useful.BuildSuccess(w, http.StatusOK, personDTO)
 }
 
-func (p PersonHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (p *PersonHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	v := validator.New()
 	var body dto.Person
@@ -116,7 +120,7 @@ func (p PersonHandler) Create(w http.ResponseWriter, r *http.Request) {
 	useful.BuildSuccess(w, http.StatusCreated, personDTO)
 }
 
-func (p PersonHandler) Update(w http.ResponseWriter, r *http.Request) {
+func (p *PersonHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 	v := validator.New()
@@ -178,7 +182,7 @@ func (p PersonHandler) Update(w http.ResponseWriter, r *http.Request) {
 	useful.BuildSuccess(w, http.StatusOK, personDTO)
 }
 
-func (p PersonHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (p *PersonHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 	objID, err := primitive.ObjectIDFromHex(id)

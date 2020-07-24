@@ -1,11 +1,11 @@
 package configs
 
 import (
-	"person/internal/repository"
 	"person/internal/handler"
+	"person/internal/repository"
 )
 
-var personHandler handler.PersonHandler
+var personHandler *handler.PersonHandler
 
 func Di() {
 	person()
@@ -13,5 +13,5 @@ func Di() {
 
 func person() {
 	personRepository := repository.PersonRepository{Collection: mongo()}
-	personHandler = handler.PersonHandler{Repository: personRepository}
+	personHandler = handler.NewPersonHandler(personRepository)
 }
