@@ -36,5 +36,5 @@ func Variables() {
 		return
 	}
 
-	log.Fatal("Error trying get files to read properties, please input a valid env.")
+	log.Fatal("Error trying get files to read properties, please input a valid env.", baseErr, envErr)
 }

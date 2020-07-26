@@ -14,11 +14,12 @@ import (
 )
 
 type PersonHandler struct {
+	Mapper mapper.Mapper
 	Repository repository.Repository
 }
 
-func NewPersonHandler(repo repository.Repository) *PersonHandler {
-	return &PersonHandler{Repository: repo}
+func NewPersonHandler(mapper mapper.Mapper, repo repository.Repository) *PersonHandler {
+	return &PersonHandler{Mapper: mapper, Repository: repo}
 }
 
 func (p *PersonHandler) Find(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +34,7 @@ func (p *PersonHandler) Find(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	peopleDTO, err := mapper.ListDocumentToListDto(peopleDocument)
+	peopleDTO, err := p.Mapper.ListDocumentToListDto(peopleDocument)
 
 	if err != nil {
 		log.Errorln(useful.ParserError, err)
@@ -63,7 +64,7 @@ func (p *PersonHandler) FindById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personDTO, err := mapper.DocumentToDto(personDocument)
+	personDTO, err := p.Mapper.DocumentToDto(personDocument)
 
 	if err != nil {
 		log.Errorln(useful.ParserError, err)
@@ -93,7 +94,7 @@ func (p *PersonHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personDocument, err := mapper.DtoToDocument(body)
+	personDocument, err := p.Mapper.DtoToDocument(body)
 
 	if err != nil {
 		log.Errorln(useful.ParserError, err)
@@ -109,7 +110,7 @@ func (p *PersonHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personDTO, err := mapper.DocumentToDto(personDocument)
+	personDTO, err := p.Mapper.DocumentToDto(personDocument)
 
 	if err != nil {
 		log.Errorln(useful.ParserError, err)
@@ -149,7 +150,7 @@ func (p *PersonHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	body.Id = objID
-	personDocument, err := mapper.DtoToDocument(body)
+	personDocument, err := p.Mapper.DtoToDocument(body)
 
 	if err != nil {
 		log.Errorln(useful.ParserError, err)
@@ -171,7 +172,7 @@ func (p *PersonHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personDTO, err := mapper.DocumentToDto(personDocument)
+	personDTO, err := p.Mapper.DocumentToDto(personDocument)
 
 	if err != nil {
 		log.Errorln(useful.ParserError, err)

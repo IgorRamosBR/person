@@ -19,12 +19,10 @@ func TestShouldReturnDTOFilled(t *testing.T) {
 		Age: 22,
 	}
 
-	dto, err := mapper.DocumentToDto(doc)
+	personMapper := &mapper.PersonMapper{}
+	dto, err := personMapper.DocumentToDto(doc)
 
-	if err != nil {
-		t.Error("Happened some error when try mapper from document to dto.")
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, dto.Id, doc.Id)
 	assert.Equal(t, dto.Name, doc.Name)
 	assert.Equal(t, dto.Email, doc.Email)
@@ -39,12 +37,10 @@ func TestShouldReturnListDTOFilled(t *testing.T) {
 		 {Id: objID, Email: "test@gmail.com", Age: 20},
  	}
 
-	dtos, err := mapper.ListDocumentToListDto(docs)
+	personMapper := &mapper.PersonMapper{}
+	dtos, err := personMapper.ListDocumentToListDto(docs)
 
-	if err != nil {
-		t.Error("Happened some error when try mapper from document to dto.")
-	}
-
+	assert.Nil(t, err)
 	assert.Len(t, dtos, 2)
 	assert.Equal(t, dtos[0].Id, docs[0].Id)
 	assert.Equal(t, dtos[0].Name, docs[0].Name)
@@ -66,12 +62,10 @@ func TestShouldReturnDocumentFilled(t *testing.T) {
 		Age: 22,
 	}
 
-	doc, err := mapper.DtoToDocument(dto)
+	personMapper := &mapper.PersonMapper{}
+	doc, err := personMapper.DtoToDocument(dto)
 
-	if err != nil {
-		t.Error("Happened error when try mapper from dto to document.")
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, doc.Id, dto.Id)
 	assert.Equal(t, doc.Name, dto.Name)
 	assert.Equal(t, doc.Email, dto.Email)
