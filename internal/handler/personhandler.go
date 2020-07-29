@@ -64,6 +64,7 @@ func (p *PersonHandler) FindById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	personDTO, err := p.Mapper.DocumentToDto(personDocument)
 
 	if err != nil {
@@ -106,7 +107,7 @@ func (p *PersonHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Errorln(useful.CreateError, err)
-		useful.BuildError(w, http.StatusBadRequest, useful.CreateError)
+		useful.BuildError(w, http.StatusInternalServerError, useful.CreateError)
 		return
 	}
 
@@ -162,7 +163,7 @@ func (p *PersonHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Errorln(useful.UpdateError, err)
-		useful.BuildError(w, http.StatusBadRequest, useful.UpdateError)
+		useful.BuildError(w, http.StatusInternalServerError, useful.UpdateError)
 		return
 	}
 
