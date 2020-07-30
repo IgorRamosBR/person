@@ -26,8 +26,15 @@ var properties Properties
 
 func Variables() {
 	variables := make(map[string]interface{})
-	base, baseErr := ioutil.ReadFile("properties/base.yaml")
-	env, envErr := ioutil.ReadFile(fmt.Sprintf("properties/%s.yaml", os.Getenv("env")))
+
+	var basepath string
+
+	if basepath, _ = os.Getwd(); basepath == "/" {
+		basepath = "/app"
+	}
+
+	base, baseErr := ioutil.ReadFile(fmt.Sprintf("%s/properties/base.yaml", basepath))
+	env, envErr := ioutil.ReadFile(fmt.Sprintf("%s/properties/%s.yaml", basepath, os.Getenv("env")))
 
 	if baseErr == nil && envErr == nil {
 		baseErr = yaml.Unmarshal(base, &variables)

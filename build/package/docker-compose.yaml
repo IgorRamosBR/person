@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+
+  person-api:
+    build:
+      context: ../../
+      dockerfile: ./build/package/Dockerfile
+    container_name: person-api
+    environment:
+      env: "local"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
