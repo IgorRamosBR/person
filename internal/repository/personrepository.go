@@ -66,9 +66,9 @@ func (p PersonRepository) Update(document document.Person) (int64, error) {
 	ctx := context.TODO()
 	filter := bson.M{"_id": document.Id}
 	update := bson.M{"$set": bson.M{
-		"name": document.Name,
+		"name":  document.Name,
 		"email": document.Email,
-		"age": document.Age,
+		"age":   document.Age,
 	}}
 
 	result, err := p.Collection.UpdateOne(ctx, filter, update)

@@ -11,13 +11,13 @@ import (
 
 type Properties struct {
 	Mongo struct {
-		Uri string
-		Database string
+		Uri        string
+		Database   string
 		Collection string
 	}
 	Port int
-	Log struct {
-		Level string
+	Log  struct {
+		Level         string
 		JsonFormatter bool
 	}
 }

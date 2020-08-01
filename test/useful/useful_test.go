@@ -17,10 +17,10 @@ func TestBuildSuccess200WithBody(t *testing.T) {
 	objID, _ := primitive.ObjectIDFromHex("5f165e2e4de9b442e60b3904")
 
 	body := dto.Person{
-		Id: objID,
-		Name: "Lucas",
+		Id:    objID,
+		Name:  "Lucas",
 		Email: "lucas@gmail.com",
-		Age: 22,
+		Age:   22,
 	}
 
 	useful.BuildSuccess(response, http.StatusOK, body)
@@ -64,10 +64,10 @@ func TestBuildError(t *testing.T) {
 
 	useful.BuildError(response, http.StatusInternalServerError, useful.CreateError)
 
-	var bodyReceived map[string]string
-	_ = json.Unmarshal([]byte(response.Body.String()), &bodyReceived)
+	var body dto.Error
+	_ = json.Unmarshal([]byte(response.Body.String()), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, response.Code)
-	assert.Equal(t, map[string]string{"message":useful.CreateError}, bodyReceived)
+	assert.Equal(t, dto.Error{Message: useful.CreateError}, body)
 	assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
 }

@@ -69,11 +69,11 @@ func TestFindReturningErrorFromDatabaseWhenTryFind(t *testing.T) {
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Find(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.InternalErrorOccurred}, body)
+	assert.Equal(t, dto.Error{Message: useful.InternalErrorOccurred}, body)
 }
 
 func TestFindReturningErrorWhenTryDoMapper(t *testing.T) {
@@ -98,11 +98,11 @@ func TestFindReturningErrorWhenTryDoMapper(t *testing.T) {
 
 	handler.NewPersonHandler(mapp, repo).Find(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal([]byte(w.Body.String()), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.InternalErrorOccurred}, body)
+	assert.Equal(t, dto.Error{Message: useful.InternalErrorOccurred}, body)
 }
 
 func TestFindSuccessReturningEmptyBody(t *testing.T) {
@@ -141,7 +141,7 @@ func TestFindByIdSuccess(t *testing.T) {
 	repo.EXPECT().FindById(gomock.Eq(id)).Return(doc, nil)
 
 	r, _ := http.NewRequest("GET", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).FindById(w, r)
@@ -168,16 +168,16 @@ func TestFindByIdReturningErrorFromDatabaseWhenTryFind(t *testing.T) {
 	repo.EXPECT().FindById(gomock.Eq(id)).Return(document.Person{}, errors.New("Find error"))
 
 	r, _ := http.NewRequest("GET", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).FindById(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.PersonNotFound}, body)
+	assert.Equal(t, dto.Error{Message: useful.PersonNotFound}, body)
 }
 
 func TestFindByIdReturningErrorWhenTryDoMapper(t *testing.T) {
@@ -196,16 +196,16 @@ func TestFindByIdReturningErrorWhenTryDoMapper(t *testing.T) {
 	mapp.EXPECT().DocumentToDto(gomock.Eq(doc)).Return(dto.Person{}, errors.New("Mapper Error"))
 
 	r, _ := http.NewRequest("GET", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(mapp, repo).FindById(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.ParserError}, body)
+	assert.Equal(t, dto.Error{Message: useful.ParserError}, body)
 }
 
 func TestCreateSuccess(t *testing.T) {
@@ -244,18 +244,21 @@ func TestCreateBrokenBody(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mocks.NewMockRepository(ctrl)
-	bodySent, _ := json.Marshal(struct{Id int; Text string}{123, "Broked"})
+	bodySent, _ := json.Marshal(struct {
+		Id   int
+		Text string
+	}{123, "Broked"})
 
 	r, _ := http.NewRequest("POST", "/person", bytes.NewBuffer(bodySent))
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Create(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.BrokenBody}, body)
+	assert.Equal(t, dto.Error{Message: useful.BrokenBody}, body)
 }
 
 func TestCreateValidatingContentOnFields(t *testing.T) {
@@ -271,11 +274,11 @@ func TestCreateValidatingContentOnFields(t *testing.T) {
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Create(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.BrokenBody}, body)
+	assert.Equal(t, dto.Error{Message: useful.BrokenBody}, body)
 }
 
 func TestCreateReturningErrorWhenTryDoMapperToDocument(t *testing.T) {
@@ -296,11 +299,11 @@ func TestCreateReturningErrorWhenTryDoMapperToDocument(t *testing.T) {
 
 	handler.NewPersonHandler(mapp, repo).Create(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.ParserError}, body)
+	assert.Equal(t, dto.Error{Message: useful.ParserError}, body)
 }
 
 func TestCreateReturningErrorFromDatabaseWhenTryCreate(t *testing.T) {
@@ -320,11 +323,11 @@ func TestCreateReturningErrorFromDatabaseWhenTryCreate(t *testing.T) {
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Create(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.CreateError}, body)
+	assert.Equal(t, dto.Error{Message: useful.CreateError}, body)
 }
 
 func TestCreateReturningErrorWhenTryDoMapperToDTO(t *testing.T) {
@@ -349,11 +352,11 @@ func TestCreateReturningErrorWhenTryDoMapperToDTO(t *testing.T) {
 
 	handler.NewPersonHandler(mapp, repo).Create(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.ParserError}, body)
+	assert.Equal(t, dto.Error{Message: useful.ParserError}, body)
 }
 
 func TestUpdateSuccess(t *testing.T) {
@@ -373,7 +376,7 @@ func TestUpdateSuccess(t *testing.T) {
 	bodySent, _ := json.Marshal(docWithoutId)
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Update(w, r)
@@ -395,19 +398,22 @@ func TestUpdateBrokenBody(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mocks.NewMockRepository(ctrl)
-	bodySent, _ := json.Marshal(struct{Id int; Text string}{123, "Broked"})
+	bodySent, _ := json.Marshal(struct {
+		Id   int
+		Text string
+	}{123, "Broked"})
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.BrokenBody}, body)
+	assert.Equal(t, dto.Error{Message: useful.BrokenBody}, body)
 }
 
 func TestUpdateValidatingContentOnFields(t *testing.T) {
@@ -420,16 +426,16 @@ func TestUpdateValidatingContentOnFields(t *testing.T) {
 	bodySent, _ := json.Marshal(dto.Person{Name: "Lucas", Email: "lucas@@gmail.com", Age: 22})
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.BrokenBody}, body)
+	assert.Equal(t, dto.Error{Message: useful.BrokenBody}, body)
 }
 
 func TestUpdateValidatingID(t *testing.T) {
@@ -442,16 +448,16 @@ func TestUpdateValidatingID(t *testing.T) {
 	bodySent, _ := json.Marshal(dto.Person{Name: "Lucas", Email: "lucas@gmail.com", Age: 22})
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.BrokenId}, body)
+	assert.Equal(t, dto.Error{Message: useful.BrokenId}, body)
 }
 
 func TestUpdateReturningErrorWhenTryDoMapperToDocument(t *testing.T) {
@@ -470,16 +476,16 @@ func TestUpdateReturningErrorWhenTryDoMapperToDocument(t *testing.T) {
 	bodySent, _ := json.Marshal(doc)
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(mapp, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.ParserError}, body)
+	assert.Equal(t, dto.Error{Message: useful.ParserError}, body)
 }
 
 func TestUpdateReturningErrorFromDatabaseWhenTryCreate(t *testing.T) {
@@ -498,16 +504,16 @@ func TestUpdateReturningErrorFromDatabaseWhenTryCreate(t *testing.T) {
 	bodySent, _ := json.Marshal(docWithoutId)
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.UpdateError}, body)
+	assert.Equal(t, dto.Error{Message: useful.UpdateError}, body)
 }
 
 func TestUpdateReturningFromDatabaseZeroDocumentAffected(t *testing.T) {
@@ -526,16 +532,16 @@ func TestUpdateReturningFromDatabaseZeroDocumentAffected(t *testing.T) {
 	bodySent, _ := json.Marshal(docWithoutId)
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.PersonNotFound}, body)
+	assert.Equal(t, dto.Error{Message: useful.PersonNotFound}, body)
 }
 
 func TestUpdateReturningErrorWhenTryDoMapperToDTO(t *testing.T) {
@@ -558,16 +564,16 @@ func TestUpdateReturningErrorWhenTryDoMapperToDTO(t *testing.T) {
 	bodySent, _ := json.Marshal(doc)
 
 	r, _ := http.NewRequest("PUT", "/person", bytes.NewBuffer(bodySent))
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(mapp, repo).Update(w, r)
 
-	var body map[string]string
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.ParserError}, body)
+	assert.Equal(t, dto.Error{Message: useful.ParserError}, body)
 }
 
 func TestDeletePersonByIdSuccess(t *testing.T) {
@@ -583,7 +589,7 @@ func TestDeletePersonByIdSuccess(t *testing.T) {
 	repo.EXPECT().Delete(gomock.Eq(objID)).Return(int64(1), nil)
 
 	r, _ := http.NewRequest("DELETE", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Delete(w, r)
@@ -602,15 +608,16 @@ func TestDeletePersonByIdWithBrokenId(t *testing.T) {
 	repo := mocks.NewMockRepository(ctrl)
 
 	r, _ := http.NewRequest("DELETE", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Delete(w, r)
-	var body map[string]string
+
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.BrokenId}, body)
+	assert.Equal(t, dto.Error{Message: useful.BrokenId}, body)
 }
 
 func TestDeletePersonByIdWithErrorReturnedFromRepository(t *testing.T) {
@@ -626,15 +633,16 @@ func TestDeletePersonByIdWithErrorReturnedFromRepository(t *testing.T) {
 	repo.EXPECT().Delete(gomock.Eq(objID)).Return(int64(0), errors.New("Error"))
 
 	r, _ := http.NewRequest("DELETE", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Delete(w, r)
-	var body map[string]string
+
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.DeleteError}, body)
+	assert.Equal(t, dto.Error{Message: useful.DeleteError}, body)
 }
 
 func TestDeletePersonByIdReturningZeroAffected(t *testing.T) {
@@ -650,13 +658,14 @@ func TestDeletePersonByIdReturningZeroAffected(t *testing.T) {
 	repo.EXPECT().Delete(gomock.Eq(objID)).Return(int64(0), nil)
 
 	r, _ := http.NewRequest("DELETE", "/person/{id}", nil)
-	r = mux.SetURLVars(r, map[string]string{"id":id})
+	r = mux.SetURLVars(r, map[string]string{"id": id})
 	w := httptest.NewRecorder()
 
 	handler.NewPersonHandler(&mapper.PersonMapper{}, repo).Delete(w, r)
-	var body map[string]string
+
+	var body dto.Error
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Equal(t, map[string]string{"message":useful.PersonNotFound}, body)
+	assert.Equal(t, dto.Error{Message: useful.PersonNotFound}, body)
 }

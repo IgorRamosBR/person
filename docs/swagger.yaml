@@ -1,0 +1,170 @@
+basePath: /v1
+definitions:
+  dto.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.Person:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    required:
+    - age
+    - email
+    - name
+    type: object
+info:
+  contact: {}
+  description: This is a crud of people.
+  license: {}
+  title: Person API
+  version: "1.0"
+paths:
+  /person:
+    get:
+      description: Find people
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Person'
+            type: array
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Find people
+      tags:
+      - person
+    post:
+      consumes:
+      - application/json
+      description: Create person
+      parameters:
+      - description: Create person
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Person'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.Person'
+        "400":
+          description: When the client sends the body with an invalid field.
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "422":
+          description: When the client sends a broken body.
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Create person
+      tags:
+      - person
+  /person/{id}:
+    delete:
+      description: Update person
+      parameters:
+      - description: Person id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204": {}
+        "400":
+          description: When the client sends a invalid id
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "404":
+          description: When not find a person.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Update person
+      tags:
+      - person
+    get:
+      description: Find person
+      parameters:
+      - description: Person id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Person'
+            type: array
+        "404":
+          description: When not find a person.
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Find person
+      tags:
+      - person
+    put:
+      description: Update person
+      parameters:
+      - description: Person id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Person'
+            type: array
+        "400":
+          description: When the client sends the body with an invalid field.
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "404":
+          description: When not find a person.
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "422":
+          description: When the client sends a broken body.
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Update person
+      tags:
+      - person
+swagger: "2.0"

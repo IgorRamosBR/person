@@ -3,6 +3,7 @@ package useful
 import (
 	"encoding/json"
 	"net/http"
+	"person/internal/dto"
 )
 
 func BuildSuccess(w http.ResponseWriter, code int, payload interface{}) {
@@ -13,12 +14,12 @@ func BuildSuccess(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func BuildError(w http.ResponseWriter, code int, message string) {
-	response, _ := json.Marshal(buildJsonMessage(message))
+	response, _ := json.Marshal(buildError(message))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	_, _ = w.Write(response)
 }
 
-func buildJsonMessage(message string) map[string]string {
-	return map[string]string{"message":message}
+func buildError(message string) dto.Error {
+	return dto.Error{Message: message}
 }

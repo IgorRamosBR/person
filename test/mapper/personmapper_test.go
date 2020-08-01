@@ -13,10 +13,10 @@ func TestShouldReturnDTOFilled(t *testing.T) {
 
 	objID, _ := primitive.ObjectIDFromHex("5f165e2e4de9b442e60b3904")
 	doc := document.Person{
-		Id: objID,
-		Name: "Lucas",
+		Id:    objID,
+		Name:  "Lucas",
 		Email: "lucas@gmail.com",
-		Age: 22,
+		Age:   22,
 	}
 
 	personMapper := &mapper.PersonMapper{}
@@ -33,9 +33,9 @@ func TestShouldReturnListDTOFilled(t *testing.T) {
 
 	objID, _ := primitive.ObjectIDFromHex("5f165e2e4de9b442e60b3904")
 	docs := []document.Person{
-		 {Id: objID, Name: "Lucas", Email: "lucas@gmail.com", Age: 22},
-		 {Id: objID, Email: "test@gmail.com", Age: 20},
- 	}
+		{Id: objID, Name: "Lucas", Email: "lucas@gmail.com", Age: 22},
+		{Id: objID, Email: "test@gmail.com", Age: 20},
+	}
 
 	personMapper := &mapper.PersonMapper{}
 	dtos, err := personMapper.ListDocumentToListDto(docs)
@@ -56,10 +56,10 @@ func TestShouldReturnDocumentFilled(t *testing.T) {
 
 	objID, _ := primitive.ObjectIDFromHex("5f165e2e4de9b442e60b3904")
 	dto := dto2.Person{
-		Id: objID,
-		Name: "Lucas",
+		Id:    objID,
+		Name:  "Lucas",
 		Email: "lucas@gmail.com",
-		Age: 22,
+		Age:   22,
 	}
 
 	personMapper := &mapper.PersonMapper{}
